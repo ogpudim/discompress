@@ -23,11 +23,11 @@ Path to batchfile can also be added to the registry to be able to compress in th
 ## DEMO
 
 Here's an example of the script working and the results it produced:
-- [Source Video](https://youtu.be/Jd7e0tqijuk) / Bitrate: 87.33 Mb/s - File Size: 515 MB
-- [500 MB Video](https://youtu.be/waEMh8Lnseg) / Bitrate: 71.04 Mb/s - File Size: 419 MB
-- [100 MB Video](https://youtu.be/RpwsI6rQQzU) / Bitrate: 14.18 Mb/s - File Size:  87 MB
-- [25  MB Video](https://youtu.be/BavXgMkSVeQ) / Bitrate:  3.84 Mb/s - File Size:  22 MB
-- [8   MB Video](https://youtu.be/YCO0psELUwQ) / Bitrate:  1.31 Mb/s - File Size:   7 MB
+- [Source Video](https://drive.google.com/file/d/1h1r5TSXJhZIRDEWOYUmzNqFiUbGwVlQE/view?usp=sharing) / Bitrate: 87.33 Mb/s - File Size: 515 MB
+- [500 MB Video](https://drive.google.com/file/d/1GUISoCe_TRSfY0WYiIYXN_M7viGdSFKJ/view?usp=sharing) / Bitrate: 71.04 Mb/s - File Size: 419 MB
+- [100 MB Video](https://drive.google.com/file/d/19ESN9xqWhTUcd7PIh-Q7XnEJa_NrDwv7/view?usp=sharing) / Bitrate: 14.18 Mb/s - File Size:  87 MB
+- [25  MB Video](https://drive.google.com/file/d/1sUFhYu2MqXlsAukZqhVZ1wfJv0GLz_jZ/view?usp=sharing) / Bitrate:  3.84 Mb/s - File Size:  22 MB
+- [8   MB Video](https://drive.google.com/file/d/1MhaHspM_XYgWMmPeARy24eqXZHDAYvpq/view?usp=sharing) / Bitrate:  1.31 Mb/s - File Size:   7 MB
 
 ## Troubleshooting
 
