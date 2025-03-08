@@ -29,6 +29,8 @@ Here's an example of the script working and the results it produced:
 - [25  MB Video](https://drive.google.com/file/d/1sUFhYu2MqXlsAukZqhVZ1wfJv0GLz_jZ/view?usp=sharing) / Bitrate:  3.84 Mb/s - File Size:  22 MB
 - [8   MB Video](https://drive.google.com/file/d/1MhaHspM_XYgWMmPeARy24eqXZHDAYvpq/view?usp=sharing) / Bitrate:  1.31 Mb/s - File Size:   7 MB
 
+NOTE: Google Drive kills the quality during the preview, if you want to see it properly, download the file (or just test it on your video and see the result for yourself)
+
 ## Troubleshooting
 
 If you encounter any issues while running the script, try the following:
