@@ -20,6 +20,15 @@ Path to batchfile can also be added to the registry to be able to compress in th
 - Doesn't allow for compressions under 125kbps for video steam and 32kbps audio stream so longer files may not be able to be compressed.
 - Requires FFmpeg to be installed on your systems path.
 
+## DEMO
+
+Here's an example of the script working and the results it produced:
+- [Source Video](https://youtu.be/Jd7e0tqijuk) / Bitrate: 87.33 Mb/s - File Size: 515 MB
+- [500 MB Video](https://youtu.be/waEMh8Lnseg) / Bitrate: 71.04 Mb/s - File Size: 419 MB
+- [100 MB Video](https://youtu.be/RpwsI6rQQzU) / Bitrate: 14.18 Mb/s - File Size:  87 MB
+- [25  MB Video](https://youtu.be/BavXgMkSVeQ) / Bitrate:  3.84 Mb/s - File Size:  22 MB
+- [8   MB Video](https://youtu.be/YCO0psELUwQ) / Bitrate:  1.31 Mb/s - File Size:   7 MB
+
 ## Troubleshooting
 
 If you encounter any issues while running the script, try the following:
