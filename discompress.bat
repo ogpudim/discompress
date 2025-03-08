@@ -1,124 +1,82 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-REM Get the directory and file extention of the input file
-set "input_file=%~1"
-set "input_directory=%~dp1"
-set "input_extension=%~x1"
-
-REM Extract input file name without extension
-for %%f in ("%input_file%") do set "input_file_name=%%~nf"
-
-REM Get current date and time
-for /F "tokens=1-3 delims=:." %%a in ("%time%") do (
-    set "hour=%%a"
-    set "minute=%%b"
-    set "second=%%c"
-)
-set "current_time=%hour%%minute%%second%"
-
-
-
-REM Check if input file extension is valid for video
-set "video_extensions=.mp4 .avi .mkv .mov .flv .wmv .webm .mpeg .3gp"
-echo %video_extensions% | find /i "%input_extension%" >nul && (
-    call :process_video
-    goto :eof
-)
-
-REM Check if input file extension is valid for audio
-set "audio_extensions=.mp3 .wav .m4a .flac .aac .ogg .wma"
-echo %audio_extensions% | find /i "%input_extension%" >nul && (
-    call :process_audio
-    goto :eof
-)
-
-REM If input file extension is not recognized, display error message and exit
-echo File type not supported.
-echo Terminating compression.
-pause
-goto :eof
-
-
-
-REM Function for processing video file
-:process_video (
-    echo Processing video file: %input_file%
-
-    REM Calculate bitrate based on input file duration
-    for /f "delims=" %%i in ('ffprobe -v error -show_entries format^=duration -of default^=noprint_wrappers^=1:nokey^=1 "%input_file%"') do set "duration=%%i"
-
-    set /a "bitrate=23 * 8 * 1000 / duration"
-    echo Video length: %duration%s
-    echo Bitrate target: %bitrate%k
-
-    REM Exit if target bitrate is under 150kbps
-    if %bitrate% LSS 150 (
-    echo Target bitrate is under 150kbps.
-    echo Unable to compress.
+if "%~1"=="" (
+    echo Drag and drop a video file onto this script to compress it.
     pause
-    goto :eof
-    )
-
-    REM Allocate bitrate based on video properties
-    set /a "video_bitrate=bitrate * 90 / 100"
-    set /a "audio_bitrate=bitrate * 10 / 100"
-
-    echo Video Bitrate: %video_bitrate%
-    echo Audio Bitrate: %audio_bitrate%
-
-
-
-    REM Exit if target video bitrate is under 125kbps
-    if %video_bitrate% LSS 125 (
-        echo Target video bitrate is under 125kbps.
-        echo Unable to compress.
-        pause
-        goto :eof
-    )
-
-    REM Exit if target audio bitrate is under 32kbps
-    if %audio_bitrate% LSS 32 (
-        echo Target audio bitrate is under 32.
-        echo Unable to compress.
-        pause
-        goto :eof
-    )
-
-    pushd %input_directory%
-    echo Compressing video file using FFmpeg...
-    ffmpeg -hide_banner -loglevel warning -stats -threads 0 -hwaccel auto -i "%input_file%" -preset slow -c:v h264_nvenc -b:v %video_bitrate%k -c:a aac -b:a %audio_bitrate%k -bufsize %bitrate%k -minrate 100 -maxrate %bitrate%k "25MB_%input_file_name%.mp4"
-    popd
-
-    goto :eof
+    exit /b
 )
 
+set "input_file=%~1"
+for /f "tokens=1-4 delims=:.," %%a in ("%time%") do set /a "start_seconds=(((%%a*60)+%%b)*60+%%c)*100+%%d"
 
-REM Function for processing audio file
-:process_audio (
-    echo Processing audio file: %input_file%
+:menu
+echo.
+echo Select the desired compression size:
+echo 1 - 8MB
+echo 2 - 25MB
+echo 3 - 100MB
+echo 4 - 500MB
+echo 5 - Exit
+set /p "option=Enter the corresponding number: "
 
-    REM Calculate input file duration
-    for /f "delims=" %%i in ('ffprobe -v error -show_entries format^=duration -of default^=noprint_wrappers^=1:nokey^=1 "%input_file%"') do set "duration=%%i"
+if "%option%"=="1" set "target_size_MB=8" & set "resolution=640x360" & set "preset=fast"
+if "%option%"=="2" set "target_size_MB=25" & set "resolution=854x480" & set "preset=medium"
+if "%option%"=="3" set "target_size_MB=100" & set "resolution=1280x720" & set "preset=faster"
+if "%option%"=="4" set "target_size_MB=500" & set "resolution=1920x1080" & set "preset=fast"
+if "%option%"=="5" exit /b
 
-    REM Calculate target bitrate based on input file duration
-    set /a "bitrate=25 * 8 * 1000 / duration"
-    echo Audio duration: %duration%s
-    echo Bitrate target: %bitrate%k
-
-    REM Exit if target bitrate is under 32kbps
-    if %bitrate% LSS 32 (
-        echo Target bitrate is under 32kbps.
-        echo Unable to compress.
-        pause
-        goto :eof
-    )
-
-    REM Compress audio file using FFmpeg
-    pushd %input_directory%
-    echo Compressing audio file using FFmpeg...
-    ffmpeg -hide_banner -loglevel warning -stats -i "%input_file%" -preset slow -c:a libmp3lame -b:a %bitrate%k -bufsize %bitrate%k -minrate 100 -maxrate %bitrate%k "25MB_%input_file_name%.mp3"
-    popd
-
-    goto :eof
+if not defined target_size_MB (
+    echo Invalid option.
+    pause
+    goto menu
 )
+
+REM Get video duration
+for /f "delims=" %%i in ('ffprobe -v error -show_entries format^=duration -of default^=noprint_wrappers^=1:nokey^=1 "%input_file%"') do set "duration=%%i"
+
+if not defined duration (
+    echo Failed to retrieve video duration.
+    pause
+    exit /b
+)
+
+set /a "max_file_size=target_size_MB * 1024 - 100"
+set /a "bitrate=max_file_size * 8 / duration"
+
+REM Set minimum limits
+if %bitrate% LSS 150 (
+    echo Target bitrate too low for acceptable quality.
+    pause
+    exit /b
+)
+
+set /a "video_bitrate=bitrate * 85 / 100"
+set /a "audio_bitrate=bitrate * 15 / 100"
+
+if %video_bitrate% LSS 125 (
+    set "video_bitrate=125"
+)
+if %audio_bitrate% LSS 32 (
+    set "audio_bitrate=32"
+)
+
+set "output_file=%target_size_MB%MB_%~n1.mp4"
+
+echo Compression started for %target_size_MB%MB...
+ffmpeg -hide_banner -loglevel warning -stats -i "%input_file%" -preset %preset% -vf scale=%resolution% -r 24 -c:v libx264 -b:v %video_bitrate%k -c:a aac -b:a %audio_bitrate%k -bufsize %bitrate%k -maxrate %bitrate%k "%output_file%"
+
+for /f "tokens=1-4 delims=:.," %%a in ("%time%") do set /a "end_seconds=(((%%a*60)+%%b)*60+%%c)*100+%%d"
+set /a "elapsed_time=end_seconds - start_seconds"
+set /a "elapsed_sec=elapsed_time / 100"
+set /a "elapsed_ms=elapsed_time %% 100"
+
+REM Get final file size
+for %%A in ("%output_file%") do set "final_size=%%~zA"
+set /a "final_size_MB=final_size / 1048576"
+
+echo Compression completed: %output_file%
+echo Final size: %final_size_MB% MB
+echo Elapsed time: %elapsed_sec%.%elapsed_ms% seconds
+
+pause
